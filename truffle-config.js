@@ -145,6 +145,30 @@ module.exports = {
       timeoutBlocks: 200,
       gas: 5500000,
       skipDryRun: true
+    },
+    polygon: {
+      provider: () =>
+        new HDWalletProvider(
+          process.env.PK,
+          'https://rpc-mainnet.maticvigil.com/'
+        ),
+      network_id: 137,
+      confirmations: 2,
+      timeoutBlocks: 200,
+      gas: 5500000,
+      skipDryRun: true
+    },
+    mumbai: {
+      provider: () =>
+        new HDWalletProvider(
+          process.env.PK,
+          'https://rpc-mumbai.maticvigil.com/'
+        ),
+      network_id: 80001,
+      confirmations: 2,
+      timeoutBlocks: 200,
+      gas: 5500000,
+      skipDryRun: true
     }
     // Useful for private networks
     // private: {
@@ -180,6 +204,7 @@ module.exports = {
   api_keys: {
     bscscan: process.env.BSCSCAN_KEY,
     etherscan: process.env.ETHERSCAN_KEY,
-    ftmscan: process.env.FTMSCAN_KEY
+    ftmscan: process.env.FTMSCAN_KEY,
+    polygonscan: process.env.POLYGON_KEY
   }
 }
