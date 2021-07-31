@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+      crossorigin="anonymous"
+    />
+    <title>Muon App client</title>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col-12 mt-5">
+          <span>Data:</span>
+          <pre id="data"></pre>
+          <button class="btn btn-success" onclick="fetchSign()">
+            <div class="d-flex justify-content-center align-items-center">
+              Send above data to muon and recieve signature
+              <div class="spinner-border d-none" role="status" id="spinner">
+                <span class="sr-only">Loading...</span>
+              </div>
+            </div>
+          </button>
+          <div class="mt-5 d-none" id="containerResponse">
+            <p class="text-success font-weight-bold">Signatures:</p>
+            <pre id="signatures"></pre>
+            <p class="text-success font-weight-bold">reqId:</p>
+            <pre id="reqId"></pre>
+            <p class="text-success font-weight-bold">muonResponse:</p>
+            <pre id="muonResponse"></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="./node_modules/muon/dist/bundle.umd.js"></script>
+
+    <script>
+      const getTimestamp = () => Math.floor(Date.now() / 1000)
+      let data = {
+        milestoneId: 1,
+        time: getTimestamp(),
+        address: '0x88a9a52f944315d5b4e917b9689e65445c401e83',
+        signature: 'signed message output'
+      }
+      document.getElementById('data').textContent = JSON.stringify(
+        data,
+        undefined,
+        2
+      )
+
+      const fetchSign = async () => {
+        document.getElementById('spinner').classList.add('d-inline-block')
+
+        const Muon = window.muon
+        const muon = new Muon('http://node1.muon.net/v1/')
+
+        // call method custom app
+
+        const mounResponse = await muon
+          .app('fear_game')
+          .method('claim', {
+            milestoneId: 1,
+            time: getTimestamp(),
+            address: '0x88a9a52f944315d5b4e917b9689e65445c401e83',
+            signature: 'signed message output'
+          })
+          .call()
+        const data = JSON.stringify(mounResponse, undefined, 2)
+        const signs = JSON.stringify(mounResponse.signatures, undefined, 2)
+        const _reqId = JSON.stringify(mounResponse._reqId)
+
+        document.getElementById('spinner').classList.remove('d-inline-block')
+
+        document.getElementById('containerResponse').classList.add('d-block')
+        document.getElementById(
+          'muonResponse'
+        ).textContent = `mounResponse:${data}`
+        document.getElementById('signatures').textContent = `${signs}`
+        document.getElementById('reqId').textContent = `_reqId:${_reqId}`
+      }
+    </script>
+  </body>
+</html>
