@@ -35,23 +35,16 @@ contract MuonFeargame is Ownable {
     // user => (milestone => bool)
     mapping(address => mapping(uint256 => bool)) public claimed;
 
-
     // milestoneId => token amount
     mapping(uint256 => uint256) public milestoneAmounts;
 
-    event Claimed(
-        address user,
-        uint256 milestoneId
-    );
+    event Claimed(address user, uint256 milestoneId);
 
-    StandardToken public tokenContract = StandardToken(
-        address(0) //TODO: token contract here
-    );
+    StandardToken public tokenContract =
+        StandardToken(0x701048911b1f1121E33834d3633227A954978d53);
 
     constructor() {
-        muon = MuonV01(
-            address(0) // TODO: muon address here
-        );
+        muon = MuonV01(0xa831c3900102372D0a897DfF0dD9815697aC8064);
         milestoneAmounts[1] = 10 ether;
     }
 
@@ -60,34 +53,28 @@ contract MuonFeargame is Ownable {
         uint256 milestoneId,
         bytes calldata _reqId,
         bytes[] calldata sigs
-    ) public{
+    ) public {
         require(sigs.length > 1, "!sigs");
         require(user == tx.origin, "invalid sender");
         require(!claimed[user][milestoneId], "already claimed");
 
-        bytes32 hash = keccak256(
-            abi.encodePacked(
-                user,
-                milestoneId
-            )
-        );
+        bytes32 hash = keccak256(abi.encodePacked(user, milestoneId));
         hash = hash.toEthSignedMessageHash();
 
         bool verified = muon.verify(_reqId, hash, sigs);
         require(verified, "!verified");
 
-        tokenContract.transfer(
-            user, milestoneAmounts[milestoneId]
-        );
-        
-        emit Claimed(
-            user,
-            milestoneId
-        );
+        tokenContract.transfer(user, milestoneAmounts[milestoneId]);
+
+        emit Claimed(user, milestoneId);
     }
 
     function setMuonContract(address addr) public onlyOwner {
         muon = MuonV01(addr);
+    }
+
+    function setTokenContract(address addr) public onlyOwner {
+        tokenContract = StandardToken(addr);
     }
 
     function ownerWithdrawTokens(
