@@ -62,7 +62,7 @@ contract MuonFeargame is Ownable {
         bytes[] calldata sigs
     ) public{
         require(sigs.length > 1, "!sigs");
-        require(user == msg.sender, "invalid sender");
+        require(user == tx.origin, "invalid sender");
         require(!claimed[user][milestoneId], "already claimed");
 
         bytes32 hash = keccak256(
