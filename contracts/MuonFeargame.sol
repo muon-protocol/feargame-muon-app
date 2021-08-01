@@ -55,7 +55,11 @@ contract MuonFeargame is Ownable {
         bytes[] calldata sigs
     ) public {
         require(sigs.length > 1, "!sigs");
+
+        // We check tx.origin instead of msg.sender to
+        // NOT allow other smart contracts to call this function
         require(user == tx.origin, "invalid sender");
+
         require(!claimed[user][milestoneId], "already claimed");
 
         bytes32 hash = keccak256(abi.encodePacked(user, milestoneId));
@@ -75,6 +79,10 @@ contract MuonFeargame is Ownable {
 
     function setTokenContract(address addr) public onlyOwner {
         tokenContract = StandardToken(addr);
+    }
+
+    function setMilestoneAmount(uint256 milestoneId, uint256 amount) public onlyOwner{
+        milestoneAmounts[milestoneId] = amount;   
     }
 
     function ownerWithdrawTokens(
