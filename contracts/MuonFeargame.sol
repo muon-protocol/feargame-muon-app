@@ -30,7 +30,10 @@ interface StandardToken {
 contract MuonFeargame is Ownable {
     using ECDSA for bytes32;
 
+    uint256 public muonAppId = 10;
+
     MuonV01 public muon;
+
 
     // user => (milestone => bool)
     mapping(address => mapping(uint256 => bool)) public claimed;
@@ -41,11 +44,11 @@ contract MuonFeargame is Ownable {
     event Claimed(address user, uint256 milestoneId);
 
     StandardToken public tokenContract =
-        StandardToken(0x701048911b1f1121E33834d3633227A954978d53);
+        StandardToken(0xfc501C2559B426226D37EF5B534c1f2e92BA385A);
 
     constructor() {
         muon = MuonV01(0xa831c3900102372D0a897DfF0dD9815697aC8064);
-        milestoneAmounts[1] = 10 ether;
+        milestoneAmounts[1] = 50 ether;
     }
 
     function claim(
@@ -62,7 +65,7 @@ contract MuonFeargame is Ownable {
 
         require(!claimed[user][milestoneId], "already claimed");
 
-        bytes32 hash = keccak256(abi.encodePacked(user, milestoneId));
+        bytes32 hash = keccak256(abi.encodePacked(muonAppId, user, milestoneId));
         hash = hash.toEthSignedMessageHash();
 
         bool verified = muon.verify(_reqId, hash, sigs);
