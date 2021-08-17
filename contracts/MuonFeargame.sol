@@ -70,6 +70,8 @@ contract MuonFeargame is Ownable {
 
         bool verified = muon.verify(_reqId, hash, sigs);
         require(verified, "!verified");
+ 
+        claimed[user][milestoneId] = true;
 
         tokenContract.transfer(user, milestoneAmounts[milestoneId]);
 
