@@ -150,7 +150,7 @@ module.exports = {
       provider: () =>
         new HDWalletProvider(
           process.env.PK,
-          'https://rpc-mainnet.maticvigil.com/'
+          'https://rpc-mainnet.matic.network'
         ),
       network_id: 137,
       confirmations: 2,

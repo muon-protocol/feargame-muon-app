@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "./MuonV01.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
@@ -27,12 +26,18 @@ interface StandardToken {
     function burn(address sender, uint256 amount) external returns (bool);
 }
 
+interface IMuonV01{
+    function verify(bytes calldata _reqId, bytes32 hash, bytes[] calldata sigs)
+        external
+        returns (bool);
+}
+
 contract MuonFeargame is Ownable {
     using ECDSA for bytes32;
 
     uint256 public muonAppId = 10;
 
-    MuonV01 public muon;
+    IMuonV01 public muon;
 
 
     // user => (milestone => bool)
@@ -44,10 +49,10 @@ contract MuonFeargame is Ownable {
     event Claimed(address user, uint256 milestoneId);
 
     StandardToken public tokenContract =
-        StandardToken(0xfc501C2559B426226D37EF5B534c1f2e92BA385A);
+        StandardToken(0xa2CA40DBe72028D3Ac78B5250a8CB8c404e7Fb8C);
 
     constructor() {
-        muon = MuonV01(0xa831c3900102372D0a897DfF0dD9815697aC8064);
+        muon = IMuonV01(0xFc8DcBB38dFef91ADfD776e4FaCd6f6892De9a35);
         milestoneAmounts[1] = 50 ether;
     }
 
@@ -79,7 +84,7 @@ contract MuonFeargame is Ownable {
     }
 
     function setMuonContract(address addr) public onlyOwner {
-        muon = MuonV01(addr);
+        muon = IMuonV01(addr);
     }
 
     function setTokenContract(address addr) public onlyOwner {
