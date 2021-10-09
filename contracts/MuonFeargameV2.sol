@@ -26,10 +26,15 @@ interface StandardToken {
     function burn(address sender, uint256 amount) external returns (bool);
 }
 
-interface IMuonV01{
-    function verify(bytes calldata _reqId, bytes32 hash, bytes[] calldata sigs)
-        external
-        returns (bool);
+struct SchnorrSign {
+    uint256 signature;
+    address owner;
+    address nonce;
+}
+
+
+interface IMuonV02{
+    function verify(bytes calldata _reqId, uint256 _hash, SchnorrSign[] calldata _sigs) external returns (bool);
 }
 
 contract MuonFeargame is Ownable {
@@ -37,63 +42,67 @@ contract MuonFeargame is Ownable {
 
     uint256 public muonAppId = 10;
 
-    IMuonV01 public muon;
+    IMuonV02 public muon;
 
 
-    // user => (milestone => bool)
-    mapping(address => mapping(uint256 => bool)) public claimed;
+    // user => (trackingId => bool)
+    mapping(address => mapping(bytes => bool)) public claimed;
 
-    // milestoneId => token amount
-    mapping(uint256 => uint256) public milestoneAmounts;
-
-    event Claimed(address user, uint256 milestoneId);
+    event Claimed(address user, bytes trackingId, uint256 reward);
 
     StandardToken public tokenContract =
         StandardToken(0xa2CA40DBe72028D3Ac78B5250a8CB8c404e7Fb8C);
 
     constructor() {
-        muon = IMuonV01(0xFc8DcBB38dFef91ADfD776e4FaCd6f6892De9a35);
-        milestoneAmounts[1] = 50 ether;
+        muon = IMuonV02(0xFc8DcBB38dFef91ADfD776e4FaCd6f6892De9a35);
     }
 
     function claim(
         address user,
-        uint256 milestoneId,
+        uint256 reward,
+        bytes calldata trackingId,
         bytes calldata _reqId,
-        bytes[] calldata sigs
+        SchnorrSign[] calldata _sigs
     ) public {
-        require(sigs.length > 1, "!sigs");
+        require(_sigs.length > 1, "!sigs");
+        require(reward > 0, "0 reward");
 
         // We check tx.origin instead of msg.sender to
         // NOT allow other smart contracts to call this function
-        require(user == tx.origin, "invalid sender");
+        
+        //TODO: uncomment this. commented just for testing
+        
+        //require(user == tx.origin, "invalid sender");
 
-        require(!claimed[user][milestoneId], "already claimed");
+        require(!claimed[user][trackingId], "already claimed");
 
-        bytes32 hash = keccak256(abi.encodePacked(muonAppId, user, milestoneId));
-        hash = hash.toEthSignedMessageHash();
+        // bytes32 hash = keccak256(abi.encodePacked(muonAppId, user, milestoneId));
+        // hash = hash.toEthSignedMessageHash();
 
-        bool verified = muon.verify(_reqId, hash, sigs);
-        require(verified, "!verified");
+        // bool verified = muon.verify(_reqId, hash, sigs);
+        // require(verified, "!verified");
+
+        bytes32 hash = keccak256(abi.encodePacked(muonAppId,
+            user, reward, trackingId
+        ));
+        require(muon.verify(_reqId, uint256(hash), _sigs), '!verified');
+
  
-        claimed[user][milestoneId] = true;
+        claimed[user][trackingId] = true;
 
-        tokenContract.transfer(user, milestoneAmounts[milestoneId]);
+        tokenContract.transfer(user, reward);
 
-        emit Claimed(user, milestoneId);
+        emit Claimed(user, trackingId, reward);
     }
 
     function setMuonContract(address addr) public onlyOwner {
-        muon = IMuonV01(addr);
+        muon = IMuonV02(addr);
     }
 
     function setTokenContract(address addr) public onlyOwner {
         tokenContract = StandardToken(addr);
     }
 
-    function setMilestoneAmount(uint256 milestoneId, uint256 amount) public onlyOwner{
-        milestoneAmounts[milestoneId] = amount;   
-    }
 
     function ownerWithdrawTokens(
         address _tokenAddr,
@@ -101,5 +110,12 @@ contract MuonFeargame is Ownable {
         uint256 _amount
     ) public onlyOwner {
         StandardToken(_tokenAddr).transfer(_to, _amount);
+    }
+
+    function ownerWithdrawETH(
+        address _to,
+        uint256 _amount
+    ) public onlyOwner {
+        payable(_to).transfer(_amount);
     }
 }
