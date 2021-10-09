@@ -40,13 +40,13 @@
     <script src="./node_modules/muon/dist/bundle.umd.js"></script>
 
     <script>
-      const getTimestamp = () => Math.floor(Date.now() / 1000)
+      // const getTimestamp = () => Math.floor(Date.now() / 1000)
       let data = {
-        milestoneId: 1,
-        time: getTimestamp(),
-        address: '0x88a9a52f944315d5b4e917b9689e65445c401e83',
-        signature: 'signed message output',
-        tag: 'test tag'
+        // time: getTimestamp(),
+        address: '0x12043c149c30b10abd9c2f0cc5a68234736cb790',
+        signature:
+          '0xcad3827b90a903b96d0740ef6dde995fec8b76f4fa3291c7f2838eab0f5d925e5b2aac54e2f88aa6c35e3066737204a9a656b80653ac8db6d309031dafb21b8f1c',
+        message: 'Please confirm you are who you say you are! 1633499800'
       }
       document.getElementById('data').textContent = JSON.stringify(
         data,
@@ -58,23 +58,25 @@
         document.getElementById('spinner').classList.add('d-inline-block')
 
         const Muon = window.muon
-        const muon = new Muon('https://node1.muon.net/v1/')
+
+        const muon = new Muon('http://localhost:8000/v1/')
+
+        // const muon = new Muon('https://node1.muon.net/v1/')
 
         // call method custom app
 
         const mounResponse = await muon
           .app('fear_game')
           .method('claim', {
-            milestoneId: 1,
-            time: getTimestamp(),
-            address: '0x88a9a52f944315d5b4e917b9689e65445c401e83',
-            signature: 'signed message output',
-            tag: 'test tag'
+            address: '0x12043c149c30b10abd9c2f0cc5a68234736cb790',
+            signature:
+              '0xcad3827b90a903b96d0740ef6dde995fec8b76f4fa3291c7f2838eab0f5d925e5b2aac54e2f88aa6c35e3066737204a9a656b80653ac8db6d309031dafb21b8f1c',
+            message: 'Please confirm you are who you say you are! 1633499800'
           })
           .call()
         const data = JSON.stringify(mounResponse, undefined, 2)
-        const signs = JSON.stringify(mounResponse.signatures, undefined, 2)
-        const _reqId = JSON.stringify(mounResponse._reqId)
+        const signs = JSON.stringify(mounResponse.sigs, undefined, 2)
+        const _reqId = JSON.stringify(mounResponse.reqId)
 
         document.getElementById('spinner').classList.remove('d-inline-block')
 
