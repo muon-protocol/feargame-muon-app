@@ -75,8 +75,8 @@
           })
           .call()
         const data = JSON.stringify(mounResponse, undefined, 2)
-        const signs = JSON.stringify(mounResponse.sigs, undefined, 2)
-        const _reqId = JSON.stringify(mounResponse.reqId)
+        const sigs = JSON.stringify(mounResponse.sigs, undefined, 2)
+        const reqId = JSON.stringify(mounResponse.reqId)
 
         document.getElementById('spinner').classList.remove('d-inline-block')
 
@@ -84,8 +84,8 @@
         document.getElementById(
           'muonResponse'
         ).textContent = `mounResponse:${data}`
-        document.getElementById('signatures').textContent = `${signs}`
-        document.getElementById('reqId').textContent = `_reqId:${_reqId}`
+        document.getElementById('signatures').textContent = `${sigs}`
+        document.getElementById('reqId').textContent = `reqId:${reqId}`
       }
     </script>
   </body>
