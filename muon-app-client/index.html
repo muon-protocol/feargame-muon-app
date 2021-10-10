@@ -59,13 +59,11 @@
 
         const Muon = window.muon
 
-        const muon = new Muon('http://localhost:8000/v1/')
-
-        // const muon = new Muon('https://node1.muon.net/v1/')
+        const muon = new Muon('https://node1.muon.net/v1/')
 
         // call method custom app
 
-        const mounResponse = await muon
+        const muonResponse = await muon
           .app('fear_game')
           .method('claim', {
             address: '0x12043c149c30b10abd9c2f0cc5a68234736cb790',
@@ -74,16 +72,16 @@
             message: 'Please confirm you are who you say you are! 1633499800'
           })
           .call()
-        const data = JSON.stringify(mounResponse, undefined, 2)
-        const sigs = JSON.stringify(mounResponse.sigs, undefined, 2)
-        const reqId = JSON.stringify(mounResponse.reqId)
+        const data = JSON.stringify(muonResponse, undefined, 2)
+        const sigs = JSON.stringify(muonResponse.sigs, undefined, 2)
+        const reqId = JSON.stringify(muonResponse.reqId)
 
         document.getElementById('spinner').classList.remove('d-inline-block')
 
         document.getElementById('containerResponse').classList.add('d-block')
         document.getElementById(
           'muonResponse'
-        ).textContent = `mounResponse:${data}`
+        ).textContent = `muonResponse:${data}`
         document.getElementById('signatures').textContent = `${sigs}`
         document.getElementById('reqId').textContent = `reqId:${reqId}`
       }
