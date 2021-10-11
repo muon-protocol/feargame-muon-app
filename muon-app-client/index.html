@@ -21,14 +21,18 @@
           <button class="btn btn-success" onclick="fetchSign()">
             <div class="d-flex justify-content-center align-items-center">
               Send above data to muon and recieve signature
-              <div class="spinner-border d-none" role="status" id="spinner">
+              <div
+                class="spinner-border d-none ml-2"
+                role="status"
+                id="spinner"
+              >
                 <span class="sr-only">Loading...</span>
               </div>
             </div>
           </button>
           <div class="mt-5 d-none" id="containerResponse">
-            <p class="text-success font-weight-bold">Signatures:</p>
-            <pre id="signatures"></pre>
+            <p class="text-success font-weight-bold">Sigs:</p>
+            <pre id="sigs"></pre>
             <p class="text-success font-weight-bold">reqId:</p>
             <pre id="reqId"></pre>
             <p class="text-success font-weight-bold">muonResponse:</p>
@@ -82,7 +86,7 @@
         document.getElementById(
           'muonResponse'
         ).textContent = `muonResponse:${data}`
-        document.getElementById('signatures').textContent = `${sigs}`
+        document.getElementById('sigs').textContent = `${sigs}`
         document.getElementById('reqId').textContent = `reqId:${reqId}`
       }
     </script>
