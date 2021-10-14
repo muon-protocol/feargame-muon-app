@@ -50,7 +50,9 @@
         address: '0x12043c149c30b10abd9c2f0cc5a68234736cb790',
         signature:
           '0xcad3827b90a903b96d0740ef6dde995fec8b76f4fa3291c7f2838eab0f5d925e5b2aac54e2f88aa6c35e3066737204a9a656b80653ac8db6d309031dafb21b8f1c',
-        message: 'Please confirm you are who you say you are! 1633499800'
+        message: 'Please confirm you are who you say you are! 1633499800',
+        amount: 100,
+        chain: 2
       }
       document.getElementById('data').textContent = JSON.stringify(
         data,
@@ -73,7 +75,9 @@
             address: '0x12043c149c30b10abd9c2f0cc5a68234736cb790',
             signature:
               '0xcad3827b90a903b96d0740ef6dde995fec8b76f4fa3291c7f2838eab0f5d925e5b2aac54e2f88aa6c35e3066737204a9a656b80653ac8db6d309031dafb21b8f1c',
-            message: 'Please confirm you are who you say you are! 1633499800'
+            message: 'Please confirm you are who you say you are! 1633499800',
+            amount: 100,
+            chain: 2
           })
           .call()
         const data = JSON.stringify(muonResponse, undefined, 2)
