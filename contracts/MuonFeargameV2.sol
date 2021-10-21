@@ -55,6 +55,11 @@ contract MuonFeargame is Ownable {
     StandardToken public tokenContract =
         StandardToken(0xa2CA40DBe72028D3Ac78B5250a8CB8c404e7Fb8C);
 
+    uint256 public maxPerTX = 500 ether;
+    uint256 public maxPerUser = 5000 ether;
+
+    mapping(address => uint256) public totalClaimed;
+
     constructor() {
         muon = IMuonV02(0xFc8DcBB38dFef91ADfD776e4FaCd6f6892De9a35);
     }
@@ -69,20 +74,15 @@ contract MuonFeargame is Ownable {
         require(_sigs.length > 0, "!sigs");
         require(reward > 0, "0 reward");
 
+        totalClaimed[user] += reward;
+        require(reward <= maxPerTX &&  totalClaimed[user] <= maxPerUser, "> max");
+
         // We check tx.origin instead of msg.sender to
         // NOT allow other smart contracts to call this function
 
-        //TODO: uncomment this. commented just for testing
-
-        //require(user == tx.origin, "invalid sender");
+        require(user == tx.origin, "invalid sender");
 
         require(!claimed[user][trackingId], "already claimed");
-
-        // bytes32 hash = keccak256(abi.encodePacked(muonAppId, user, milestoneId));
-        // hash = hash.toEthSignedMessageHash();
-
-        // bool verified = muon.verify(_reqId, hash, sigs);
-        // require(verified, "!verified");
 
         bytes32 hash = keccak256(
             abi.encodePacked(muonAppId, user, reward, trackingId)
@@ -102,6 +102,14 @@ contract MuonFeargame is Ownable {
 
     function setTokenContract(address addr) public onlyOwner {
         tokenContract = StandardToken(addr);
+    }
+
+    function setMaxPerTX(uint256 _val) public onlyOwner {
+        maxPerTX = _val;
+    }
+
+    function setMaxPerUser(uint256 _val) public onlyOwner {
+        maxPerUser = _val;
     }
 
     function ownerWithdrawTokens(
