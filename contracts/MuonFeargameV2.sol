@@ -44,6 +44,7 @@ contract MuonFeargame is Ownable {
     using ECDSA for bytes32;
 
     uint256 public muonAppId = 10;
+    uint256 public chainId = 2;
 
     IMuonV02 public muon;
 
@@ -68,11 +69,14 @@ contract MuonFeargame is Ownable {
         address user,
         uint256 reward,
         string calldata trackingId,
+        uint256 chain,
         bytes calldata _reqId,
         SchnorrSign[] calldata _sigs
     ) public {
         require(_sigs.length > 0, "!sigs");
         require(reward > 0, "0 reward");
+
+        require(chain == chainId, "invalid chain");
 
         totalClaimed[user] += reward;
         require(reward <= maxPerTX &&  totalClaimed[user] <= maxPerUser, "> max");
@@ -85,7 +89,7 @@ contract MuonFeargame is Ownable {
         require(!claimed[user][trackingId], "already claimed");
 
         bytes32 hash = keccak256(
-            abi.encodePacked(muonAppId, user, reward, trackingId)
+            abi.encodePacked(muonAppId, user, reward, trackingId, chain)
         );
         require(muon.verify(_reqId, uint256(hash), _sigs), "!verified");
 
@@ -110,6 +114,10 @@ contract MuonFeargame is Ownable {
 
     function setMaxPerUser(uint256 _val) public onlyOwner {
         maxPerUser = _val;
+    }
+
+    function setChainId(uint256 _val) public onlyOwner {
+        chainId = _val;
     }
 
     function ownerWithdrawTokens(
