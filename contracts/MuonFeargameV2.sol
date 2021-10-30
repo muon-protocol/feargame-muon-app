@@ -26,13 +26,12 @@ interface StandardToken {
     function burn(address sender, uint256 amount) external returns (bool);
 }
 
-struct SchnorrSign {
-    uint256 signature;
-    address owner;
-    address nonce;
-}
-
 interface IMuonV02 {
+    struct SchnorrSign {
+        uint256 signature;
+        address owner;
+        address nonce;
+    }
     function verify(
         bytes calldata _reqId,
         uint256 _hash,
@@ -40,7 +39,7 @@ interface IMuonV02 {
     ) external returns (bool);
 }
 
-contract MuonFeargame is Ownable {
+contract MuonFeargameV2 is Ownable {
     using ECDSA for bytes32;
 
     uint256 public muonAppId = 10;
@@ -62,7 +61,7 @@ contract MuonFeargame is Ownable {
     mapping(address => uint256) public totalClaimed;
 
     constructor() {
-        muon = IMuonV02(0xFc8DcBB38dFef91ADfD776e4FaCd6f6892De9a35);
+        muon = IMuonV02(0xE0686e70d80837360bfCdFE4dE9D78715459B552);
     }
 
     function claim(
@@ -71,7 +70,7 @@ contract MuonFeargame is Ownable {
         string calldata trackingId,
         uint256 chain,
         bytes calldata _reqId,
-        SchnorrSign[] calldata _sigs
+        IMuonV02.SchnorrSign[] calldata _sigs
     ) public {
         require(_sigs.length > 0, "!sigs");
         require(reward > 0, "0 reward");
