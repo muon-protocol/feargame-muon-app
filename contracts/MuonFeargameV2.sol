@@ -45,6 +45,8 @@ contract MuonFeargameV2 is Ownable {
     uint256 public muonAppId = 10;
     uint256 public chainId = 2;
 
+    uint256 public acceptableMuonDelay = 10 minutes;
+
     IMuonV02 public muon;
 
     // user => (trackingId => bool)
@@ -69,9 +71,11 @@ contract MuonFeargameV2 is Ownable {
         uint256 reward,
         string calldata trackingId,
         uint256 chain,
+        uint256 muonTimestamp,
         bytes calldata _reqId,
         IMuonV02.SchnorrSign[] calldata _sigs
     ) public {
+        require(block.timestamp - muonTimestamp < acceptableMuonDelay, "expired");
         require(_sigs.length > 0, "!sigs");
         require(reward > 0, "0 reward");
 
@@ -88,7 +92,7 @@ contract MuonFeargameV2 is Ownable {
         require(!claimed[user][trackingId], "already claimed");
 
         bytes32 hash = keccak256(
-            abi.encodePacked(muonAppId, user, reward, trackingId, chain)
+            abi.encodePacked(muonAppId, user, reward, trackingId, chain, muonTimestamp)
         );
         require(muon.verify(_reqId, uint256(hash), _sigs), "!verified");
 
@@ -113,6 +117,10 @@ contract MuonFeargameV2 is Ownable {
 
     function setMaxPerUser(uint256 _val) public onlyOwner {
         maxPerUser = _val;
+    }
+
+    function setAcceptableMuonDelay(uint256 _val) public onlyOwner {
+        acceptableMuonDelay = _val;
     }
 
     function setChainId(uint256 _val) public onlyOwner {
